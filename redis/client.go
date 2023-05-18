@@ -1,7 +1,6 @@
 package redis
 
 import (
-	"crypto/tls"
 	"fmt"
 	"time"
 
@@ -1078,18 +1077,19 @@ func (c *Client) connect() error {
 		return nil
 	}
 
-	c.redisOptions.TLSConfig = &tls.Config{
-		MinVersion: tls.VersionTLS12,
+	// If k6 has a TLSConfig set in its state, use
+	// it has redis' client TLSConfig too.
+	if vuState.TLSConfig != nil {
+		c.redisOptions.TLSConfig = vuState.TLSConfig
 	}
 
 	// use k6's lib.DialerContexter function has redis'
 	// client Dialer
-	c.redisOptions.Dialer = vuState.Dialer.DialContext
+	// c.redisOptions.Dialer = vuState.Dialer.DialContext
 
 	// Replace the internal redis client instance with a new
 	// one using our custom options.
 	c.redisClient = redis.NewUniversalClient(c.redisOptions)
-
 	return nil
 }
 
