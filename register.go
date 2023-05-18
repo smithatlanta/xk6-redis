@@ -2,7 +2,7 @@
 package redis
 
 import (
-	"github.com/grafana/xk6-redis/redis"
+	"github.com/smithatlanta/xk6-redis/redis"
 	"go.k6.io/k6/js/modules"
 )
 
