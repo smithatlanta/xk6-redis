@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"crypto/tls"
 	"fmt"
 	"time"
 
@@ -346,6 +347,7 @@ func (c *Client) Expire(key string, seconds int) *goja.Promise {
 }
 
 // Ttl returns the remaining time to live of a key that has a timeout.
+//
 //nolint:revive,stylecheck
 func (c *Client) Ttl(key string) *goja.Promise {
 	promise, resolve, reject := c.makeHandledPromise()
@@ -1076,10 +1078,8 @@ func (c *Client) connect() error {
 		return nil
 	}
 
-	// If k6 has a TLSConfig set in its state, use
-	// it has redis' client TLSConfig too.
-	if vuState.TLSConfig != nil {
-		c.redisOptions.TLSConfig = vuState.TLSConfig
+	c.redisOptions.TLSConfig = &tls.Config{
+		MinVersion: tls.VersionTLS12,
 	}
 
 	// use k6's lib.DialerContexter function has redis'
